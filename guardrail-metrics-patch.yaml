@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guardrail-proxy-code
+  namespace: guardrails
+data:
+  app.py: |
+    from fastapi import FastAPI, Request
+    from fastapi.responses import JSONResponse
+    from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+    from starlette.responses import Response
+    import requests
+    import time
+
+    app = FastAPI()
+
+    BLOCKLIST = [
+        "password",
+        "credit card",
+        "hack",
+        "exploit"
+    ]
+
+    LITELLM_URL = "http://litellm.aigateway.svc.cluster.local:4000/v1/chat/completions"
+
+    guardrail_allowed_total = Counter(
+        "guardrail_allowed_total",
+        "Total allowed AI requests"
+    )
+
+    guardrail_blocked_total = Counter(
+        "guardrail_blocked_total",
+        "Total blocked AI requests",
+        ["policy"]
+    )
+
+    @app.get("/metrics")
+    def metrics():
+        return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+    @app.post("/v1/chat/completions")
+    async def proxy(req: Request):
+        body = await req.json()
+        text = str(body).lower()
+
+        for banned in BLOCKLIST:
+            if banned in text:
+                guardrail_blocked_total.labels(policy=banned).inc()
+                print(f"GUARDRAIL_BLOCKED policy={banned} time={int(time.time())}", flush=True)
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "error": f"Blocked by guardrail policy: {banned}"
+                    }
+                )
+
+        guardrail_allowed_total.inc()
+        print(f"GUARDRAIL_ALLOWED time={int(time.time())}", flush=True)
+
+        headers = {
+            "Authorization": req.headers.get("Authorization", ""),
+            "Content-Type": "application/json"
+        }
+
+        resp = requests.post(
+            LITELLM_URL,
+            headers=headers,
+            json=body
+        )
+
+        return JSONResponse(
+            status_code=resp.status_code,
+            content=resp.json()
+        )

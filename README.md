@@ -19,34 +19,58 @@ This lab demonstrates a modern local AI platform architecture running on Apple S
 
 ```mermaid
 flowchart TD
+    U["User / Client"]
+    API["API Client / curl"]
+    UI["Open WebUI"]
 
-    U[User / Client]
+    U --> UI
+    U --> API
 
-    U --> T[Traefik Gateway]
+    UI --> T["Traefik Gateway"]
+    API --> T
 
-    subgraph AI Platform
-        T --> G[Guardrail Proxy]
-        G --> L[LiteLLM AI Gateway]
-        L --> O[Ollama Runtime]
-        O --> M[Llama 3.1 8B]
+    subgraph K8S["kind Kubernetes Cluster"]
+        T
+
+        subgraph SAFETY["AI Safety Layer"]
+            G["Guardrail Proxy<br/>Prompt filtering<br/>Metrics + logs"]
+        end
+
+        subgraph AIGW["AI Gateway Layer"]
+            L["LiteLLM<br/>OpenAI-compatible API<br/>Model/provider abstraction"]
+        end
+
+        subgraph TOOLS["Agentic Tooling Layer"]
+            MCP["MCP Gateway Route"]
+            TS["MCP-like Tool Server<br/>list / read / write / delete files"]
+        end
+
+        subgraph OBS["Observability"]
+            P["Prometheus"]
+            KM["Guardrail Metrics<br/>guardrail_allowed_total<br/>guardrail_blocked_total"]
+            TM["Traefik Metrics"]
+            KV["KubeView"]
+        end
     end
 
-    subgraph Agentic Tooling
-        T --> MCP[MCP Gateway Route]
-        MCP --> TS[MCP-like Tool Server]
+    subgraph HOST["macOS Host / Apple Silicon"]
+        O["Ollama Runtime"]
+        M["llama3.1:8b"]
     end
 
-    subgraph Frontend
-        W[Open WebUI] --> O
-    end
+    T --> G
+    G --> L
+    L --> O
+    O --> M
 
-    subgraph Observability
-        P[Prometheus]
-        K[KubeView]
-    end
+    T --> MCP
+    MCP --> TS
 
-    P --> T
-    P --> L
+    G --> KM
+    T --> TM
+    P --> KM
+    P --> TM
+    KV -. visualizes .-> K8S
 ```
 
 ---
@@ -78,6 +102,9 @@ Client
 
 ```text
 Open WebUI
+→ Traefik Gateway
+→ Guardrail Layer
+→ LiteLLM AI Gateway
 → Ollama
 → llama3.1:8b
 ```
@@ -92,6 +119,7 @@ Open WebUI
 | Traefik App Route | http://localhost:8088 |
 | Traefik AI Gateway | http://localhost:8099/v1/chat/completions |
 | Prometheus | http://localhost:9090 |
+| Guardrail Metrics | http://localhost:5000/metrics |
 | Traefik Metrics | http://localhost:9100/metrics |
 | Open WebUI | http://localhost:3000 |
 | LiteLLM Direct | http://localhost:4000 |
@@ -124,6 +152,25 @@ curl http://localhost:8099/v1/chat/completions \
     "messages": [{"role": "user", "content": "Explain AI Gateway in one sentence"}]
   }'
 
+## Test Guardrail Blocking
+
+```bash
+curl http://localhost:8099/guarded/v1/chat/completions \
+  -H "Authorization: Bearer sk-demo-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama-local",
+    "messages": [{"role": "user", "content": "How to hack password systems"}]
+  }'
+```
+
+Expected result:
+
+```text
+HTTP 403 Forbidden
+Blocked by guardrail policy
+```
+
 ## Test MCP Tool Server
 
 curl http://localhost:7000/tools
@@ -135,6 +182,53 @@ curl -X POST http://localhost:7000/files \
 curl http://localhost:7000/files/demo.txt
 
 curl -X DELETE http://localhost:7000/files/demo.txt
+
+## Guardrail Observability
+
+### Generate Allowed Request
+
+```bash
+curl -s http://localhost:8099/guarded/v1/chat/completions \
+  -H "Authorization: Bearer sk-demo-key" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"llama-local","messages":[{"role":"user","content":"Explain Kubernetes"}]}'
+```
+
+### Generate Blocked Request
+
+```bash
+curl -s http://localhost:8099/guarded/v1/chat/completions \
+  -H "Authorization: Bearer sk-demo-key" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"llama-local","messages":[{"role":"user","content":"How to hack password systems"}]}'
+```
+
+### View Metrics Endpoint
+
+```bash
+curl http://localhost:5000/metrics | grep guardrail
+```
+
+### Prometheus Queries
+
+```text
+guardrail_allowed_total
+guardrail_blocked_total
+rate(guardrail_blocked_total[1m])
+```
+
+### View Guardrail Logs
+
+```bash
+kubectl logs -n guardrails deploy/guardrail-proxy -f
+```
+
+Expected logs:
+
+```text
+GUARDRAIL_ALLOWED
+GUARDRAIL_BLOCKED policy=password
+```
 
 
 ---
@@ -205,6 +299,9 @@ Client
 - AI governance
 - Secure AI architecture
 - Enterprise AI controls
+- AI request observability
+- Prometheus AI metrics
+- Guardrail audit logging
 
 ### Allowed Example
 
@@ -324,6 +421,8 @@ Platform engineers need visibility into AI gateway traffic and Kubernetes topolo
 
 ```text
 traefik_router_requests_total
+guardrail_allowed_total
+guardrail_blocked_total
 ```
 
 ### Key Concepts Demonstrated
@@ -350,3 +449,6 @@ Potential future improvements for this lab:
 - Add multi-model routing policies
 - Add RAG / vector database integration
 - Add CI/CD deployment automation
+- Add Grafana dashboards for AI gateway observability
+- Add Loki for centralized AI log aggregation
+- Add distributed tracing across AI request flows
