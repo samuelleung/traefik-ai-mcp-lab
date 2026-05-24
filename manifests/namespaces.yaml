@@ -1,0 +1,103 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-23T15:46:03Z"
+    labels:
+      kubernetes.io/metadata.name: apps
+    name: apps
+    resourceVersion: "1307"
+    uid: c3a975e0-2f1c-41da-9851-5b3963868f03
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-23T15:41:09Z"
+    labels:
+      kubernetes.io/metadata.name: gateway
+    name: gateway
+    resourceVersion: "691"
+    uid: bbbf4bdd-5662-4cb8-b2a4-c73657cf3eb7
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-23T16:23:09Z"
+    labels:
+      kubernetes.io/metadata.name: monitoring
+    name: monitoring
+    resourceVersion: "4235"
+    uid: 69e030f0-2d1b-4da6-a8ec-828333acd27b
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-24T01:45:44Z"
+    labels:
+      kubernetes.io/metadata.name: webui
+    name: webui
+    resourceVersion: "36439"
+    uid: 1abf3c8d-286e-4cf9-8444-00803dc0ed57
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-24T02:37:30Z"
+    labels:
+      kubernetes.io/metadata.name: aigateway
+    name: aigateway
+    resourceVersion: "40540"
+    uid: 38dea7d2-497e-4953-ae66-3588cd2f2059
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-24T01:02:10Z"
+    labels:
+      kubernetes.io/metadata.name: ai
+    name: ai
+    resourceVersion: "32999"
+    uid: 8fa5fa71-cc68-4568-b6bf-a5e97078d7f7
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-05-24T02:44:56Z"
+    labels:
+      kubernetes.io/metadata.name: mcp
+    name: mcp
+    resourceVersion: "41151"
+    uid: 7a6a8769-169f-4478-8c84-0e504cf59366
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+kind: List
+metadata:
+  resourceVersion: ""

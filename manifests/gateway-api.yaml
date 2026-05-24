@@ -1,0 +1,340 @@
+apiVersion: v1
+items:
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: GatewayClass
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: traefik
+      meta.helm.sh/release-namespace: gateway
+    creationTimestamp: "2026-05-23T15:44:08Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: traefik-gateway
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: traefik
+      helm.sh/chart: traefik-40.2.0
+    name: traefik
+    resourceVersion: "1153"
+    uid: 83d5fabb-de60-48cd-a725-1a606b33e46a
+  spec:
+    controllerName: traefik.io/gateway-controller
+  status:
+    conditions:
+    - lastTransitionTime: "2026-05-23T15:44:09Z"
+      message: Handled by Traefik controller
+      observedGeneration: 1
+      reason: Handled
+      status: "True"
+      type: Accepted
+    supportedFeatures:
+    - name: BackendTLSPolicy
+    - name: GRPCRoute
+    - name: Gateway
+    - name: GatewayPort8080
+    - name: HTTPRoute
+    - name: HTTPRouteBackendProtocolH2C
+    - name: HTTPRouteBackendProtocolWebSocket
+    - name: HTTPRouteBackendRequestHeaderModification
+    - name: HTTPRouteDestinationPortMatching
+    - name: HTTPRouteHostRewrite
+    - name: HTTPRouteMethodMatching
+    - name: HTTPRoutePathRedirect
+    - name: HTTPRoutePathRewrite
+    - name: HTTPRoutePortRedirect
+    - name: HTTPRouteQueryParamMatching
+    - name: HTTPRouteResponseHeaderModification
+    - name: HTTPRouteSchemeRedirect
+    - name: ReferenceGrant
+    - name: TLSRoute
+    - name: TLSRouteModeMixed
+    - name: TLSRouteModeTerminate
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"gateway.networking.k8s.io/v1","kind":"Gateway","metadata":{"annotations":{},"name":"app-gateway","namespace":"gateway"},"spec":{"gatewayClassName":"traefik","listeners":[{"allowedRoutes":{"namespaces":{"from":"All"}},"name":"web","port":8000,"protocol":"HTTP"}]}}
+    creationTimestamp: "2026-05-23T15:48:46Z"
+    generation: 1
+    name: app-gateway
+    namespace: gateway
+    resourceVersion: "37299"
+    uid: 88d30954-1d57-4aa9-9795-3332a781e847
+  spec:
+    gatewayClassName: traefik
+    listeners:
+    - allowedRoutes:
+        namespaces:
+          from: All
+      name: web
+      port: 8000
+      protocol: HTTP
+  status:
+    conditions:
+    - lastTransitionTime: "2026-05-24T01:56:26Z"
+      message: Gateway successfully scheduled
+      observedGeneration: 1
+      reason: Accepted
+      status: "True"
+      type: Accepted
+    - lastTransitionTime: "2026-05-24T01:56:26Z"
+      message: Gateway successfully scheduled
+      observedGeneration: 1
+      reason: Programmed
+      status: "True"
+      type: Programmed
+    listeners:
+    - attachedRoutes: 3
+      conditions:
+      - lastTransitionTime: "2026-05-24T01:56:26Z"
+        message: No error found
+        observedGeneration: 1
+        reason: Accepted
+        status: "True"
+        type: Accepted
+      - lastTransitionTime: "2026-05-24T01:56:26Z"
+        message: No error found
+        observedGeneration: 1
+        reason: ResolvedRefs
+        status: "True"
+        type: ResolvedRefs
+      - lastTransitionTime: "2026-05-24T01:56:26Z"
+        message: No error found
+        observedGeneration: 1
+        reason: Programmed
+        status: "True"
+        type: Programmed
+      name: web
+      supportedKinds:
+      - group: gateway.networking.k8s.io
+        kind: HTTPRoute
+      - group: gateway.networking.k8s.io
+        kind: GRPCRoute
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: Gateway
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: traefik
+      meta.helm.sh/release-namespace: gateway
+    creationTimestamp: "2026-05-23T15:44:08Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: traefik-gateway
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: traefik
+      helm.sh/chart: traefik-40.2.0
+    name: traefik-gateway
+    namespace: gateway
+    resourceVersion: "1154"
+    uid: 2ae535ed-70e5-4ab2-8d7d-8bedd812aada
+  spec:
+    gatewayClassName: traefik
+    listeners:
+    - allowedRoutes:
+        namespaces:
+          from: Same
+      name: web
+      port: 8000
+      protocol: HTTP
+  status:
+    conditions:
+    - lastTransitionTime: "2026-05-23T15:44:09Z"
+      message: Gateway successfully scheduled
+      observedGeneration: 1
+      reason: Accepted
+      status: "True"
+      type: Accepted
+    - lastTransitionTime: "2026-05-23T15:44:09Z"
+      message: Gateway successfully scheduled
+      observedGeneration: 1
+      reason: Programmed
+      status: "True"
+      type: Programmed
+    listeners:
+    - attachedRoutes: 0
+      conditions:
+      - lastTransitionTime: "2026-05-23T15:44:09Z"
+        message: No error found
+        observedGeneration: 1
+        reason: Accepted
+        status: "True"
+        type: Accepted
+      - lastTransitionTime: "2026-05-23T15:44:09Z"
+        message: No error found
+        observedGeneration: 1
+        reason: ResolvedRefs
+        status: "True"
+        type: ResolvedRefs
+      - lastTransitionTime: "2026-05-23T15:44:09Z"
+        message: No error found
+        observedGeneration: 1
+        reason: Programmed
+        status: "True"
+        type: Programmed
+      name: web
+      supportedKinds:
+      - group: gateway.networking.k8s.io
+        kind: HTTPRoute
+      - group: gateway.networking.k8s.io
+        kind: GRPCRoute
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"gateway.networking.k8s.io/v1","kind":"HTTPRoute","metadata":{"annotations":{},"name":"ollama-route","namespace":"ai"},"spec":{"parentRefs":[{"group":"gateway.networking.k8s.io","kind":"Gateway","name":"app-gateway","namespace":"gateway"}],"rules":[{"backendRefs":[{"group":"","kind":"Service","name":"ollama","port":11434,"weight":1}],"filters":[{"extensionRef":{"group":"traefik.io","kind":"Middleware","name":"ai-ratelimit"},"type":"ExtensionRef"}],"matches":[{"path":{"type":"PathPrefix","value":"/api"}}]}]}}
+    creationTimestamp: "2026-05-24T01:02:25Z"
+    generation: 2
+    name: ollama-route
+    namespace: ai
+    resourceVersion: "39745"
+    uid: a70784e0-411f-40fa-955b-40d68c75f430
+  spec:
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: app-gateway
+      namespace: gateway
+    rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: ollama
+        port: 11434
+        weight: 1
+      filters:
+      - extensionRef:
+          group: traefik.io
+          kind: Middleware
+          name: ai-ratelimit
+        type: ExtensionRef
+      matches:
+      - path:
+          type: PathPrefix
+          value: /api
+  status:
+    parents:
+    - conditions:
+      - lastTransitionTime: "2026-05-24T02:27:21Z"
+        message: ""
+        observedGeneration: 2
+        reason: Accepted
+        status: "True"
+        type: Accepted
+      - lastTransitionTime: "2026-05-24T02:27:21Z"
+        message: ""
+        observedGeneration: 2
+        reason: ResolvedRefs
+        status: "True"
+        type: ResolvedRefs
+      controllerName: traefik.io/gateway-controller
+      parentRef:
+        group: gateway.networking.k8s.io
+        kind: Gateway
+        name: app-gateway
+        namespace: gateway
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"gateway.networking.k8s.io/v1","kind":"HTTPRoute","metadata":{"annotations":{},"name":"whoami-route","namespace":"apps"},"spec":{"parentRefs":[{"name":"app-gateway","namespace":"gateway"}],"rules":[{"backendRefs":[{"name":"whoami","port":80}],"matches":[{"path":{"type":"PathPrefix","value":"/"}}]}]}}
+    creationTimestamp: "2026-05-23T15:49:04Z"
+    generation: 1
+    name: whoami-route
+    namespace: apps
+    resourceVersion: "1573"
+    uid: 4482c10e-8a47-4f3c-9f2d-6c08785a6fef
+  spec:
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: app-gateway
+      namespace: gateway
+    rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: whoami
+        port: 80
+        weight: 1
+      matches:
+      - path:
+          type: PathPrefix
+          value: /
+  status:
+    parents:
+    - conditions:
+      - lastTransitionTime: "2026-05-23T15:49:04Z"
+        message: ""
+        observedGeneration: 1
+        reason: Accepted
+        status: "True"
+        type: Accepted
+      - lastTransitionTime: "2026-05-23T15:49:04Z"
+        message: ""
+        observedGeneration: 1
+        reason: ResolvedRefs
+        status: "True"
+        type: ResolvedRefs
+      controllerName: traefik.io/gateway-controller
+      parentRef:
+        group: gateway.networking.k8s.io
+        kind: Gateway
+        name: app-gateway
+        namespace: gateway
+- apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"gateway.networking.k8s.io/v1","kind":"HTTPRoute","metadata":{"annotations":{},"name":"open-webui-route","namespace":"webui"},"spec":{"hostnames":["webui.localhost"],"parentRefs":[{"name":"app-gateway","namespace":"gateway"}],"rules":[{"backendRefs":[{"name":"open-webui","port":8080}]}]}}
+    creationTimestamp: "2026-05-24T01:56:25Z"
+    generation: 2
+    name: open-webui-route
+    namespace: webui
+    resourceVersion: "38514"
+    uid: aa66e927-b453-429f-8c85-707cdc295f22
+  spec:
+    hostnames:
+    - webui.localhost
+    parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: app-gateway
+      namespace: gateway
+    rules:
+    - backendRefs:
+      - group: ""
+        kind: Service
+        name: open-webui
+        port: 8080
+        weight: 1
+      matches:
+      - path:
+          type: PathPrefix
+          value: /
+  status:
+    parents:
+    - conditions:
+      - lastTransitionTime: "2026-05-24T02:11:35Z"
+        message: ""
+        observedGeneration: 2
+        reason: Accepted
+        status: "True"
+        type: Accepted
+      - lastTransitionTime: "2026-05-24T02:11:35Z"
+        message: ""
+        observedGeneration: 2
+        reason: ResolvedRefs
+        status: "True"
+        type: ResolvedRefs
+      controllerName: traefik.io/gateway-controller
+      parentRef:
+        group: gateway.networking.k8s.io
+        kind: Gateway
+        name: app-gateway
+        namespace: gateway
+kind: List
+metadata:
+  resourceVersion: ""

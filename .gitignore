@@ -1,0 +1,22 @@
+# Secrets / credentials
+*secret*.yaml
+*secrets*.yaml
+*.key
+*.pem
+.env
+.env.*
+kubeconfig
+config
+
+# Generated backups
+backups/
+*.tar.gz
+*.zip
+
+# Runtime logs
+*.log
+/tmp/
+
+# OS/editor
+.DS_Store
+.vscode/

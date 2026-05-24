@@ -1,0 +1,60 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDBTCCAe2gAwIBAgIIBZpjLbeKe10wDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczAeFw0yNjA1MjMxNTMzMTRaFw0zNjA1MjAxNTM4MTRaMBUx
+      EzARBgNVBAMTCmt1YmVybmV0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQCv0t6K1w3f+lnUzi0uc4NreO/uMP10ZG6KJYqdl+WuDk3Dj+Tb+vvqDkq0
+      R0JQGNOERcvJLjQ8kkDEcMvI7tG7nN0Rvo4Pe/iLXlQG5T19JSInVoD9lNNsjI6P
+      gomHYMULSk3YOMGtClayQ3TILN5PSoALa/38ON0d5l6SQlya83bLkyTGeLAfAP4P
+      rNsKIJDD4PZpMgq+Eq0IwtBKDRstfOz0526YrBO2xyaAz89GTyorECvEYoyglRmf
+      O7r7dOwPG7EX2ELXxEIzh79pzGQrJBs+zI+D94EerdFVTVOto5xWH1BCVwOX0vd3
+      V4KhyCqNit40Az1tS/Zt6ArYBH6LAgMBAAGjWTBXMA4GA1UdDwEB/wQEAwICpDAP
+      BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRg9/Qzj2HETdiOJAn6o58gRKC5izAV
+      BgNVHREEDjAMggprdWJlcm5ldGVzMA0GCSqGSIb3DQEBCwUAA4IBAQBIzO5apA8V
+      /Iz9c+MROek8sFOMyUm8sku1JlFiruLja+PRejHc+HcptJwIKw+YrkZzq4x+j9uF
+      hqYvDypNNGAANimmA+Etp7Y9CmDqQIhpAA0YBFT5kgkNWTcD4mNOWaqlJ22T+d0t
+      5WXwvbVWK+2lr7+QCgF36wNq7taDL3il5max1WEqs1FguWlAV3ioEjSSNwneTZTg
+      en+9WtW/GfUb8nx+ViR1jM+DZh6eicohZm8VV86FXZM3FDKGDqYqxl/Y2Yd/BY7a
+      FrBmVvStlDtUGkdbRlKH6zVPsmJQMWaAQCcr5r7ZgAFD6OvbzyDeh5l6fxeQ1h/9
+      mC08LzC2bSEl
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubernetes.io/description: Contains a CA bundle that can be used to verify the
+        kube-apiserver when using internal endpoints such as the internal service
+        IP or kubernetes.default.svc. No other usage is guaranteed across distributions
+        of Kubernetes clusters.
+    creationTimestamp: "2026-05-24T02:37:30Z"
+    name: kube-root-ca.crt
+    namespace: aigateway
+    resourceVersion: "40541"
+    uid: 2a3f1a17-4708-4ff2-995d-b76685161940
+- apiVersion: v1
+  data:
+    config.yaml: |
+      model_list:
+        - model_name: llama-local
+          litellm_params:
+            model: ollama/llama3.1:8b
+            api_base: http://host.docker.internal:11434
+
+      general_settings:
+        master_key: sk-traefik-lab
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","data":{"config.yaml":"model_list:\n  - model_name: llama-local\n    litellm_params:\n      model: ollama/llama3.1:8b\n      api_base: http://host.docker.internal:11434\n\ngeneral_settings:\n  master_key: sk-traefik-lab\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"litellm-config","namespace":"aigateway"}}
+    creationTimestamp: "2026-05-24T02:37:33Z"
+    name: litellm-config
+    namespace: aigateway
+    resourceVersion: "40546"
+    uid: c48ee88f-9da5-4439-852a-681626d799a7
+kind: List
+metadata:
+  resourceVersion: ""

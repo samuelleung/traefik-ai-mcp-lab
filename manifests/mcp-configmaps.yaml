@@ -1,0 +1,123 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    ca.crt: |
+      -----BEGIN CERTIFICATE-----
+      MIIDBTCCAe2gAwIBAgIIBZpjLbeKe10wDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE
+      AxMKa3ViZXJuZXRlczAeFw0yNjA1MjMxNTMzMTRaFw0zNjA1MjAxNTM4MTRaMBUx
+      EzARBgNVBAMTCmt1YmVybmV0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+      AoIBAQCv0t6K1w3f+lnUzi0uc4NreO/uMP10ZG6KJYqdl+WuDk3Dj+Tb+vvqDkq0
+      R0JQGNOERcvJLjQ8kkDEcMvI7tG7nN0Rvo4Pe/iLXlQG5T19JSInVoD9lNNsjI6P
+      gomHYMULSk3YOMGtClayQ3TILN5PSoALa/38ON0d5l6SQlya83bLkyTGeLAfAP4P
+      rNsKIJDD4PZpMgq+Eq0IwtBKDRstfOz0526YrBO2xyaAz89GTyorECvEYoyglRmf
+      O7r7dOwPG7EX2ELXxEIzh79pzGQrJBs+zI+D94EerdFVTVOto5xWH1BCVwOX0vd3
+      V4KhyCqNit40Az1tS/Zt6ArYBH6LAgMBAAGjWTBXMA4GA1UdDwEB/wQEAwICpDAP
+      BgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRg9/Qzj2HETdiOJAn6o58gRKC5izAV
+      BgNVHREEDjAMggprdWJlcm5ldGVzMA0GCSqGSIb3DQEBCwUAA4IBAQBIzO5apA8V
+      /Iz9c+MROek8sFOMyUm8sku1JlFiruLja+PRejHc+HcptJwIKw+YrkZzq4x+j9uF
+      hqYvDypNNGAANimmA+Etp7Y9CmDqQIhpAA0YBFT5kgkNWTcD4mNOWaqlJ22T+d0t
+      5WXwvbVWK+2lr7+QCgF36wNq7taDL3il5max1WEqs1FguWlAV3ioEjSSNwneTZTg
+      en+9WtW/GfUb8nx+ViR1jM+DZh6eicohZm8VV86FXZM3FDKGDqYqxl/Y2Yd/BY7a
+      FrBmVvStlDtUGkdbRlKH6zVPsmJQMWaAQCcr5r7ZgAFD6OvbzyDeh5l6fxeQ1h/9
+      mC08LzC2bSEl
+      -----END CERTIFICATE-----
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubernetes.io/description: Contains a CA bundle that can be used to verify the
+        kube-apiserver when using internal endpoints such as the internal service
+        IP or kubernetes.default.svc. No other usage is guaranteed across distributions
+        of Kubernetes clusters.
+    creationTimestamp: "2026-05-24T02:44:56Z"
+    name: kube-root-ca.crt
+    namespace: mcp
+    resourceVersion: "41153"
+    uid: 5f84b158-61cc-4b83-8673-e4e3e1e3b70a
+- apiVersion: v1
+  data:
+    server.py: |
+      from fastapi import FastAPI
+      from pydantic import BaseModel
+      from pathlib import Path
+
+      app = FastAPI(title="MCP-like Tool Server")
+
+      DATA = Path("/data")
+      DATA.mkdir(exist_ok=True)
+
+      class WriteRequest(BaseModel):
+          filename: str
+          content: str
+
+      @app.get("/")
+      def root():
+          return {"status": "ok"}
+
+      @app.get("/tools")
+      def tools():
+          return {
+              "tools": [
+                  {"name": "list_files"},
+                  {"name": "read_file"},
+                  {"name": "write_file"},
+                  {"name": "delete_file"}
+              ]
+          }
+
+      @app.get("/files")
+      def list_files():
+          return {
+              "files": [
+                  p.name for p in DATA.iterdir() if p.is_file()
+              ]
+          }
+
+      @app.get("/files/{filename}")
+      def read_file(filename: str):
+          path = DATA / filename
+
+          if not path.exists():
+              return {"error": "file not found"}
+
+          return {
+              "filename": filename,
+              "content": path.read_text()
+          }
+
+      @app.post("/files")
+      def write_file(req: WriteRequest):
+          path = DATA / req.filename
+          path.write_text(req.content)
+
+          return {
+              "status": "written",
+              "filename": req.filename
+          }
+
+      @app.delete("/files/{filename}")
+      def delete_file(filename: str):
+          path = DATA / filename
+
+          if not path.exists():
+              return {"error": "file not found"}
+
+          path.unlink()
+
+          return {
+              "status": "deleted",
+              "filename": filename
+          }
+  kind: ConfigMap
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","data":{"server.py":"from fastapi import FastAPI\nfrom pydantic import BaseModel\nfrom pathlib import Path\n\napp = FastAPI(title=\"MCP-like Tool Server\")\n\nDATA = Path(\"/data\")\nDATA.mkdir(exist_ok=True)\n\nclass WriteRequest(BaseModel):\n    filename: str\n    content: str\n\n@app.get(\"/\")\ndef root():\n    return {\"status\": \"ok\"}\n\n@app.get(\"/tools\")\ndef tools():\n    return {\n        \"tools\": [\n            {\"name\": \"list_files\"},\n            {\"name\": \"read_file\"},\n            {\"name\": \"write_file\"},\n            {\"name\": \"delete_file\"}\n        ]\n    }\n\n@app.get(\"/files\")\ndef list_files():\n    return {\n        \"files\": [\n            p.name for p in DATA.iterdir() if p.is_file()\n        ]\n    }\n\n@app.get(\"/files/{filename}\")\ndef read_file(filename: str):\n    path = DATA / filename\n\n    if not path.exists():\n        return {\"error\": \"file not found\"}\n\n    return {\n        \"filename\": filename,\n        \"content\": path.read_text()\n    }\n\n@app.post(\"/files\")\ndef write_file(req: WriteRequest):\n    path = DATA / req.filename\n    path.write_text(req.content)\n\n    return {\n        \"status\": \"written\",\n        \"filename\": req.filename\n    }\n\n@app.delete(\"/files/{filename}\")\ndef delete_file(filename: str):\n    path = DATA / filename\n\n    if not path.exists():\n        return {\"error\": \"file not found\"}\n\n    path.unlink()\n\n    return {\n        \"status\": \"deleted\",\n        \"filename\": filename\n    }\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"mcp-tool-server-code","namespace":"mcp"}}
+    creationTimestamp: "2026-05-24T02:51:08Z"
+    name: mcp-tool-server-code
+    namespace: mcp
+    resourceVersion: "42829"
+    uid: 843793a6-1d86-42ee-8568-1abdf1c8f55c
+kind: List
+metadata:
+  resourceVersion: ""
